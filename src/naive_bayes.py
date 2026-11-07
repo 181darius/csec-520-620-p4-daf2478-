@@ -16,7 +16,7 @@ Work in LOG space (products of thousands of small probabilities underflow) and n
 posteriors with the log-sum-exp trick.
 """
 from __future__ import annotations
-
+import numpy as np
 
 class NaiveBayesReference:
     """Scikit-learn baseline with the same interface as NaiveBayesScratch."""
@@ -55,7 +55,14 @@ class NaiveBayesScratch:
     # ---- the pieces to write, roughly in this order --------------------------------
     def _class_log_prior(self, y):
         """Return log P(c) for each class (in the order of self.classes_)."""
-        raise NotImplementedError("compute log class priors from the label counts")
+        log_priors = []
+
+        for c in self.classes_:
+            count = np.sum(y == c)
+            probability = count / len(y)
+            log_priors.append(np.log(probability))
+    
+        return np.array(log_priors)
 
     def _feature_log_prob(self, X, y):
         """Return log theta of shape (n_classes, n_features) with add-alpha smoothing.
